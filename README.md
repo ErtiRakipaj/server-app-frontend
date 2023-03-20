@@ -1,6 +1,7 @@
 # ServerApp
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.1.
+The frontend that consumes this Java REST API: https://github.com/ErtiRakipaj/server-management-system
 
 ## Development server
 
