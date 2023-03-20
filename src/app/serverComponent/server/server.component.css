@@ -275,3 +275,8 @@ table.table .avatar {
 .pointer {
   cursor: pointer;
 }
+
+#dot{
+  font-size: 20px;
+  margin: 0 5px;
+}

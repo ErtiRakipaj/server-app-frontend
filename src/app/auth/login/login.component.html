@@ -1,0 +1,38 @@
+
+<div class="sidenav">
+         <div class="login-main-text">
+            <h2>Server Management System<br> Login Page</h2>
+            <p>Login or register from here to access.</p>
+            <div class="made-by">
+              <p>Made by: Laert Rakipaj</p>
+              <a href="https://www.linkedin.com/in/laert-rakipaj-17876325b/" target="_blank"><i class="fab fa-linkedin fa-lg"></i></a>
+              <a href="https://github.com/ErtiRakipaj?tab=repositories" target="_blank"><i class="fab fa-github fa-lg" style="margin-left:40px ;"></i></a>
+              <a href="mailto:erti.rakipaj@gmail.com"><i class="fas fa-envelope fa-lg" style="margin-left: 40px;"></i></a>
+      <a href="https://wa.me/+355684545016" target="_blank"><i class="fab fa-whatsapp fa-lg" style="margin-left: 40px;"></i></a>
+            </div>
+
+         </div>
+
+
+      </div>
+
+      <div class="main">
+
+         <div class="col-md-6 col-sm-12">
+            <div class="login-form">
+               <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+                  <div class="form-group">
+                     <label>User Name</label>
+                     <input type="text" class="form-control" placeholder="User Name" ngModel name="username" id="username">
+                  </div>
+                  <div class="form-group">
+                     <label>Password</label>
+                     <input type="password" class="form-control" placeholder="Password" ngModel name="password" id="password">
+                  </div>
+                  <button type="submit" class="btn btn-black">Login</button>
+                  <button style="margin-left: 35px;" type="submit" class="btn btn-secondary" [routerLink]="['/register']"> Register</button>
+               </form>
+               <notifier-container></notifier-container>
+            </div>
+         </div>
+      </div>

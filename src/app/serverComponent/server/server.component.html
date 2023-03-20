@@ -1,0 +1,156 @@
+<!-- <div>{{ appState$ | async | json }}</div> -->
+<div class="container-xl">
+  <div class="table-responsive">
+      <div class="table-wrapper">
+          <div class="table-title">
+              <div class="row">
+                  <div class="col-sm-6">
+                      <h1>Welcome {{ loggedUser }}</h1>
+                      <h3>Manage Servers</h3>
+                  </div>
+                  <div class="col-sm-6">
+
+                      <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Download Report
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <button (click)="printReportAsExcel()" type="button" class="btn btn-success">Download as Excel</button>
+                          <button (click)="printReportAsPDF()" type="button" class="btn btn-danger">Download as PDF</button>
+                        </div>
+                      </div>
+                      <button (click)="logout()" type="button" class="btn btn-danger">Logout</button>
+
+                      <a href="#addEmployeeModal" class="btn btn-success" data-toggle="modal">
+                          <i class="material-icons">&#xE147;</i>
+                          <span>New Server</span>
+                      </a>
+
+                      <span>
+                          <select #serverStat (change)="filterServers(serverStat.value)" ngModel = "ALL" name="status"
+                              class="btn btn-info" style="height: 32.91px;">
+                              <option value="ALL">ALL</option>
+                              <option value="ACTIVE">ACTIVE</option>
+                              <option value="INACTIVE">INACTIVE</option>
+                          </select>
+                      </span>
+                  </div>
+              </div>
+          </div>
+           <br>
+          <ng-container *ngIf="(appState$ | async) as appState" [ngSwitch]="appState.dataState">
+              <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+                  <div class="col-md-12 single-note-item text-center">
+                      <div class="spinner-border text-info" role="status"></div>
+                  </div>
+              </ng-container>
+              <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                  <table class="table table-striped table-hover" id="servers">
+                      <thead>
+                          <tr>
+                              <th>Image</th>
+                              <th>IP Address</th>
+                              <th>Company</th>
+                              <th>Location</th>
+                              <th>Status</th>
+                              <th>Ping</th>
+                              <th>Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody *ngFor="let server of appState.appData.data.servers; let i = index" >
+                          <tr>
+                              <td> <img [src]="server.imageUrl" [alt]="server.id" width="40" height="40"></td>
+                              <td>{{ server.ip }}</td>
+                              <td>{{ server.companyName }}</td>
+                              <td>{{ server.location ? server.location : '-' }}</td>
+                              <td>
+                                  <span class="badge"
+                                  [ngClass]="[server.status === Status.ACTIVE ? ' badge-success' : ' badge-danger']">
+                                    {{ server.status === Status.INACTIVE || server.status === null ? 'INACTIVE' : 'ACTIVE' }}
+                                  </span>
+                              </td>
+                              <td>
+                                  <a (click)="pingServer(server.ip)" style="cursor: pointer;">
+                                      <i *ngIf="(filterStatus$ | async) === '' || (filterStatus$ | async) !== server.ip"
+                                          class="material-icons" title="Ping server">&#xe328;</i>
+                                      <i *ngIf="(filterStatus$ | async) === server.ip"
+                                          class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                                  </a>
+                              </td>
+                              <td>
+                                  <a (click)="deleteServer(server)" class="delete" data-toggle="modal"
+                                      style="cursor: pointer;"><i class="material-icons" data-toggle="tooltip"
+                                          title="Delete">&#xE872;</i></a>
+                              </td>
+                      </tbody>
+                  </table>
+              </ng-container>
+              <ng-container *ngSwitchCase="DataState.ERROR_STATE">
+                  <div class="alert-danger">
+                      {{ appState.error }}
+                  </div>
+              </ng-container>
+          </ng-container>
+      </div>
+      <div class="bg-dark text-center text-white">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+          © 2023 Copyright:
+          <a class="text-white">Laert Rakipaj</a>
+          <a href="https://www.linkedin.com/in/laert-rakipaj-17876325b/" target="_blank"><i style="margin-left: 40px;" class="fab fa-linkedin fa-lg"></i></a>
+          <a href="https://github.com/ErtiRakipaj?tab=repositories" target="_blank"><i class="fab fa-github fa-lg" style="margin-left:40px ;"></i></a>
+          <a href="mailto:erti.rakipaj@gmail.com"><i class="fas fa-envelope fa-lg" style="margin-left: 40px;"></i></a>
+          <a href="https://wa.me/+355684545016" target="_blank"><i class="fab fa-whatsapp fa-lg" style="margin-left: 40px;"></i></a>
+        </div>
+      </div>
+  </div>
+
+</div>
+
+
+<!-- Add server Modal HTML -->
+ <div id="addEmployeeModal" class="modal fade">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <form #serverForm = "ngForm" (ngSubmit)="saveServer(serverForm)">
+              <div class="modal-header">
+                  <h4 class="modal-title">Add Server</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group">
+                      <label>IP</label>
+                      <div class="d-flex">
+                        <input type="number" pattern="[0-9]*" ngModel name="ip1" id="ip1" class="form-control" required maxlength="3" min="1" max="255" style="flex: 1;" inputmode="numeric" step="50" onkeypress="return !(event.charCode == 46)">
+                        <span id="dot"> . </span>
+                        <input type="number" pattern="[0-9]*" ngModel name="ip2" id="ip2" class="form-control" required maxlength="3" min="0" max="255" style="flex: 1;" inputmode="numeric" step="50" onkeypress="return !(event.charCode == 46)">
+                        <span id="dot"> . </span>
+                        <input type="number" pattern="[0-9]*" ngModel name="ip3" id="ip3" class="form-control" required maxlength="3" min="0" max="255" style="flex: 1;" inputmode="numeric" step="50" onkeypress="return !(event.charCode == 46)">
+                        <span id="dot"> . </span>
+                        <input type="number"  ngModel name="ip4" id="ip4" class="form-control" required maxlength="3" min="0" max="255" style="flex: 1;" inputmode="numeric" step="50" onkeypress="return !(event.charCode == 46)">
+                    </div>
+
+                    <!-- <input type="text" ngModel name="ip" class="form-control" required> -->
+                  </div>
+
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-warning" id="closeModal" data-dismiss="modal" (click)="serverForm.resetForm()">
+                      Cancel
+                  </button>
+                  <button type="submit" [disabled]="serverForm.invalid || (isLoading$ | async)"
+                      class="btn btn-success">
+                      <i *ngIf="isLoading$ | async" class="fas fa-spinner fa-spin"></i>
+                      <span *ngIf="isLoading$ | async">Saving...</span>
+                      <span *ngIf="!(isLoading$ | async)" >Add</span>
+                  </button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+</div>
+
+
+<notifier-container ></notifier-container>
+
+
